@@ -1,0 +1,71 @@
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('./IBMPlexSans.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- IBM Plex Sans SemiBold (Кнопки, вкладки, имена клиентов) --- */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('./IBMPlexSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- IBM Plex Sans Bold (Крупные заголовки, названия разделов) --- */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('./IBMPlexSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- IBM Plex Mono Regular (Моноширинный для номеров боксов, дат и денег) --- */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('./IBMPlexMono.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- IBM Plex Mono Medium (Для выделения задолженностей и главных сумм) --- */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('./IBMPlexMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .crm-navigation, .garage-status-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+}
+
+/* Моноширинная сетка для точности расчетов и списков */
+.garage-number,   /* Номер гаража/бокса (например, Бокс-42) */
+.rent-date,       /* Даты начала/окончания аренды (10.11.2026) */
+.payment-amount,  /* Суммы платежей, долги, залоги (15 000 ₽) */
+.tenant-phone,    /* Телефоны клиентов */
+.contract-number  /* Номера договоров аренды */ {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 400;
+}
+
+/* Для выделения критически важных данных (например, «Долг: 5000 ₽») */
+.accent-mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+}
