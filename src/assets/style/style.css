@@ -25,3 +25,65 @@ nav a.router-link-active {
   color: #2d6a4f;
   font-weight: 600;
 }
+
+.garage-detail__card {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.garage-detail__label {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.garage-detail__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: #2d6a4f;
+  color: #fff;
+}
+
+.btn--danger {
+  background: #fff;
+  border: 1px solid #e53935;
+  color: #e53935;
+}
+
+
+.back-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2d6a4f;
+  padding: 0;
+}
+
+.popup-editing{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #fff;
+  margin: auto;
+  top: 80px;
+  left: 0;
+}

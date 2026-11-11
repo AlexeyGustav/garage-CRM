@@ -7,15 +7,15 @@ export const useGaragesStore = defineStore('garages', () => {
   // Всего горажей
   const total = computed(() => garages.value.lenght);
   // Занятых
-  const occupied = computed(() => garages.value.filter((g) => g.status === 'occupied').length);
+  const occupied = computed(() => garages.value.filter((g) => g.status === 'Занят').length);
   // Свободных
-  const free = computed(() => garages.value.filter((g) => g.status === 'free'));
+  const free = computed(() => garages.value.filter((g) => g.status === 'Свободен'));
 
   // Добавление гаража
   function add(garage) {
     garages.value.push({
       id: Date.now().toString(),
-      status: 'free',
+      status: 'Свободен',
       ...garage
     })
   }
@@ -30,7 +30,7 @@ export const useGaragesStore = defineStore('garages', () => {
 
   // Удаление
   function remove(id) {
-    garages.value = garages.filter((item) => item.id !== id)
+    garages.value = garages.value.filter((item) => item.id !== id)
   }
 
   // Поиск

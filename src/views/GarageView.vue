@@ -9,6 +9,7 @@
     <!-- Форма добавления -->
     <form v-if="showForm" class="garages-form" @submit.prevent="handleAdd">
       <input class="garages-form__input" v-model="form.address" placeholder="Адрес" required />
+      <input class="garages-form__input" v-model="form.num" type="number" placeholder="Номер гаража" required />
       <input class="garages-form__input" v-model="form.area_m2" type="number" placeholder="Площадь м²" />
       <input class="garages-form__input" v-model="form.purchase_price" type="number" placeholder="Цена покупки ₽" required />
       <input class="garages-form__input" v-model="form.rent_amount" type="number" placeholder="Аренда в месяц ₽" required />
@@ -56,11 +57,18 @@ const form = ref({
   area_m2: '',
   purchase_price: '',
   rent_amount: '',
+  num: ''
 })
 
 function handleAdd() {
   store.add({ ...form.value })
-  form.value = { address: '', area_m2: '', purchase_price: '', rent_amount: '' }
+  form.value = {
+    address: '',
+    area_m2: '',
+    purchase_price: '',
+    rent_amount: '',
+    num: ''
+  }
   showForm.value = false
 }
 </script>
