@@ -7,7 +7,7 @@
         <h1 class="garage-detail__title">
           Гараж № <span class="garage-number">{{ garage.num }}</span>
         </h1>
-        <span class="garage-detail__status">{{ garage.status }}</span>
+        <span class="garage-detail__status" :class="garage.status === 'occupied' ? 'busy' : 'free'">{{ garage.status === 'occupied' ? 'Занят' : 'Свободен' }}</span>
       </div>
 
       <div class="garage-detail__grid">
@@ -160,8 +160,16 @@ function handleDelete() {
   font-weight: 600;
   padding: 4px 12px;
   border-radius: 20px;
+}
+
+.free {
   background: #d8f3dc;
   color: #2d6a4f;
+}
+
+.busy {
+  background: #fff3e0;
+  color: #e65100;
 }
 
 .garage-detail__grid {
