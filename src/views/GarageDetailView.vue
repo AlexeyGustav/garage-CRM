@@ -7,7 +7,11 @@
         <h1 class="garage-detail__title">
           Гараж № <span class="garage-number">{{ garage.num }}</span>
         </h1>
-        <span class="garage-detail__status" :class="garage.status === 'occupied' ? 'busy' : 'free'">{{ garage.status === 'occupied' ? 'Занят' : 'Свободен' }}</span>
+        <span
+          class="garage-detail__status"
+          :class="isGarageOccupied(garage.id) ? 'busy' : 'free'"
+          >{{ isGarageOccupied(garage.id) ? 'Занят' : 'Свободен' }}</span
+        >
       </div>
 
       <div class="garage-detail__grid">
@@ -88,11 +92,13 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { useGaragesStore } from '../stores/garages.js';
+import { useTenantsStore } from '../stores/tenants.js';
 import { ref, computed, watch } from 'vue';
 
 const route = useRoute();
 const router = useRouter();
 const store = useGaragesStore();
+const storeTenants = useTenantsStore();
 
 // Редактировать
 const isEditing = ref(false);
@@ -124,6 +130,11 @@ function saveEdit() {
 function handleDelete() {
   store.remove(garageID.value);
   router.push({ name: 'garages' });
+}
+
+// Статус занят или свободен
+function isGarageOccupied(garageId) {
+  return storeTenants.tenants.some((tenant) => tenant.garageId === garageId);
 }
 </script>
 

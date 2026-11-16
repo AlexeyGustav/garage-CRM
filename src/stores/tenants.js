@@ -5,7 +5,7 @@ export const useTenantsStore = defineStore('tenants', () => {
   const tenants = ref([]);
 
   function getByGarageId(garageId) {
-    return tenants.value.find((item) => item.garageId === garageId);
+    return tenants.value.filter((item) => item.garageId === garageId);
   }
 
   // Добавление арендатора

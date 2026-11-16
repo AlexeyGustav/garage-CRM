@@ -1,6 +1,5 @@
 <template>
   <div class="garages">
-
     <div class="garages-header">
       <h1 class="garages-title">Гаражи</h1>
       <button class="btn btn--primary" @click="showForm = !showForm">+ Добавить</button>
@@ -9,10 +8,33 @@
     <!-- Форма добавления -->
     <form v-if="showForm" class="garages-form" @submit.prevent="handleAdd">
       <input class="garages-form__input" v-model="form.address" placeholder="Адрес" required />
-      <input class="garages-form__input" v-model="form.num" type="number" placeholder="Номер гаража" required />
-      <input class="garages-form__input" v-model="form.area_m2" type="number" placeholder="Площадь м²" />
-      <input class="garages-form__input" v-model="form.purchase_price" type="number" placeholder="Цена покупки ₽" required />
-      <input class="garages-form__input" v-model="form.rent_amount" type="number" placeholder="Аренда в месяц ₽" required />
+      <input
+        class="garages-form__input"
+        v-model="form.num"
+        type="number"
+        placeholder="Номер гаража"
+        required
+      />
+      <input
+        class="garages-form__input"
+        v-model="form.area_m2"
+        type="number"
+        placeholder="Площадь м²"
+      />
+      <input
+        class="garages-form__input"
+        v-model="form.purchase_price"
+        type="number"
+        placeholder="Цена покупки ₽"
+        required
+      />
+      <input
+        class="garages-form__input"
+        v-model="form.rent_amount"
+        type="number"
+        placeholder="Аренда в месяц ₽"
+        required
+      />
       <div class="garages-form__actions">
         <button class="btn btn--primary" type="submit">Сохранить</button>
         <button class="btn btn--ghost" type="button" @click="showForm = false">Отмена</button>
@@ -27,49 +49,64 @@
       <div v-for="garage in store.garages" :key="garage.id" class="garage-card">
         <div class="garage-card__top">
           <span class="garage-number garage-card__address">{{ garage.address }}</span>
-          <span :class="['garage-card__status', garage.status === 'occupied' ? 'garage-card__status--occupied' : 'garage-card__status--free']">
-            {{ garage.status === 'occupied' ? 'Занят' : 'Свободен' }}
+          <span
+            :class="[
+              'garage-card__status',
+              isGarageOccupied(garage.id)
+                ? 'garage-card__status--occupied'
+                : 'garage-card__status--free',
+            ]"
+          >
+            {{ isGarageOccupied(garage.id) ? 'Занят' : 'Свободен' }}
           </span>
         </div>
         <div class="garage-card__bottom">
           <span class="garage-card__area">{{ garage.area_m2 }} м²</span>
-          <span class="payment-amount garage-card__rent">{{ formatPrice(garage.rent_amount) }} ₽/мес</span>
+          <span class="payment-amount garage-card__rent"
+            >{{ formatPrice(garage.rent_amount) }} ₽/мес</span
+          >
         </div>
         <router-link class="garage-card__link" :to="{ name: 'garage', params: { id: garage.id } }">
           Открыть →
         </router-link>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useGaragesStore } from '../stores/garages.js'
-import { formatPrice } from '../utils/format.js'
+import { ref } from 'vue';
+import { useGaragesStore } from '../stores/garages.js';
+import { useTenantsStore } from '../stores/tenants.js';
+import { formatPrice } from '../utils/format.js';
 
-const store = useGaragesStore()
-const showForm = ref(false)
+const store = useGaragesStore();
+const storeTenants = useTenantsStore();
+const showForm = ref(false);
 
 const form = ref({
   address: '',
   area_m2: '',
   purchase_price: '',
   rent_amount: '',
-  num: ''
-})
+  num: '',
+});
 
 function handleAdd() {
-  store.add({ ...form.value })
+  store.add({ ...form.value });
   form.value = {
     address: '',
     area_m2: '',
     purchase_price: '',
     rent_amount: '',
-    num: ''
-  }
-  showForm.value = false
+    num: '',
+  };
+  showForm.value = false;
+}
+
+// Статус занят или свободен
+function isGarageOccupied(garageId) {
+  return storeTenants.tenants.some((tenant) => tenant.garageId === garageId);
 }
 </script>
 
