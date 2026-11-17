@@ -2,6 +2,7 @@
   <div class="tenants">
     <div class="tenants-header">
       <h1 class="tenants-title">Арендаторы</h1>
+      <a href="../assets/docs/куплю гараж.docx" download>Скачать договор</a>
       <button @click="openTenantsForm = true" class="btn btn--primary" type="button">
         + Добавить
       </button>
@@ -49,67 +50,120 @@
         type="date"
         placeholder="Дата начала аренды"
       />
+      <!-- Сумма аренды в месяц -->
+      <input
+        class="tenants-form__input payment-amount"
+        v-model.number="tenantsForm.rentAmount"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Сумма аренды в месяц ₽"
+      />
+      <!-- Залог -->
+      <input
+        class="tenants-form__input payment-amount"
+        v-model.number="tenantsForm.deposit"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Залог ₽"
+      />
       <div class="tenants-form__actions">
         <button @click="add" class="btn btn--primary" type="button">Сохранить</button>
         <button @click="cancelTenants" class="btn btn--ghost" type="button">Отмена</button>
       </div>
     </form>
 
-    <!-- Состояние: когда список пуст  -->
-    <p v-if="!storeTenants.tenants.length" class="tenants-empty">Арендаторов пока нет</p>
-
-    <!-- Список карточек арендаторов -->
-    <div v-if="storeTenants.tenants" class="tenants-list">
-      <div v-for="human in storeTenants.tenants" :key="human.id" class="tenant-card">
-        <div class="tenant-card__top">
-          <span class="tenant-card__name">{{ human.name }}</span>
-          <span class="garage-number tenant-card__garage"
-            >Гараж № {{ searchGarage(human.garageId) }}</span
-          >
-        </div>
-
-        <div class="tenant-card__details">
-          <div class="tenant-card__phones">
-            <span class="tenant-phone tenant-card__phone">
-              {{
-                human.telephone && human.telephone.length > 10
-                  ? human.telephone
-                  : 'Телефон не указан'
-              }}
-            </span>
-            <span
-              v-if="human.extraPhone && human.extraPhone.length > 10"
-              class="tenant-phone tenant-card__phone tenant-card__phone--extra"
+    <Loader v-if="storeTenants.isLoading" :size="200" />
+    <template v-else>
+      <!-- Состояние: когда список пуст  -->
+      <p v-if="!storeTenants.tenants.length" class="tenants-empty">Арендаторов пока нет</p>
+      <!-- Список карточек арендаторов -->
+      <div class="tenants-list">
+        <div
+          v-for="human in storeTenants.tenants"
+          :key="human.id"
+          class="tenant-card"
+          :class="human.archived ? 'tenant-card--archived' : ''"
+        >
+          <div class="tenant-card__top">
+            <span class="tenant-card__name">{{ human.name }}</span>
+            <span class="garage-number tenant-card__garage"
+              >Гараж № {{ searchGarage(human.garageId) }}</span
             >
-              {{ human.extraPhone }}
-            </span>
+          </div>
+
+          <div class="tenant-card__details">
+            <div class="tenant-card__phones">
+              <span class="tenant-phone tenant-card__phone">
+                {{
+                  human.telephone && human.telephone.length > 10
+                    ? human.telephone
+                    : 'Телефон не указан'
+                }}
+              </span>
+              <span
+                v-if="human.extraPhone && human.extraPhone.length > 10"
+                class="tenant-phone tenant-card__phone--extra"
+              >
+                {{ human.extraPhone }}
+              </span>
+            </div>
+
+            <!-- Финансы: аренда и залог -->
+            <div class="tenant-card__money">
+              <span v-if="human.rentAmount" class="payment-amount tenant-card__rent">
+                {{ formatPrice(human.rentAmount) }} ₽/мес
+              </span>
+              <span v-if="human.deposit" class="payment-amount tenant-card__deposit">
+                Залог: {{ formatPrice(human.deposit) }} ₽
+              </span>
+            </div>
+          </div>
+
+          <div class="tenant-card__bottom">
+            <span v-if="human.data" class="rent-date tenant-card__date">с {{ human.data }}</span>
+            <div class="tenant-card__actions">
+              <span v-if="human.archived" class="tenant-card__archived-badge">В архиве</span>
+              <button
+                v-else
+                @click="archiveTenant(human.id, human.archived)"
+                type="button"
+                class="tenant-card__archive"
+                title="Прекратить начисления платежей"
+              >
+                В архив
+              </button>
+              <button
+                @click="deleteTenants(human.id)"
+                class="tenant-card__delete"
+                type="button"
+                title="Удалить арендатора"
+              >
+                Удалить
+              </button>
+            </div>
           </div>
         </div>
-
-        <div class="tenant-card__bottom">
-          <span v-if="human.data" class="rent-date tenant-card__date">с {{ human.data }}</span>
-          <button
-            @click="deleteTenants(human.id)"
-            class="tenant-card__delete"
-            type="button"
-            title="Удалить арендатора"
-          >
-            Удалить
-          </button>
-        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { useTenantsStore } from '../stores/tenants.js';
+import { useTenantsStore } from '@/stores/tenants.js';
 import { useGaragesStore } from '@/stores/garages.js';
-import { formatPhone } from '../utils/format.js';
+import { formatPrice, formatPhone } from '@/utils/format.js';
+import Loader from '@/components/Loader.vue';
+import { onMounted } from 'vue';
 
 const storeTenants = useTenantsStore();
 const storeGarages = useGaragesStore();
+
+onMounted(() => {
+  storeTenants.fetchTenants();
+});
 
 const openTenantsForm = ref(false);
 const tenantsForm = ref({
@@ -118,6 +172,9 @@ const tenantsForm = ref({
   data: '',
   garageId: '',
   extraPhone: '',
+  rentAmount: '',
+  deposit: '',
+  archived: false,
 });
 
 // Добавить арендатора
@@ -130,6 +187,9 @@ function add() {
     data: '',
     garageId: '',
     extraPhone: '',
+    rentAmount: '',
+    deposit: '',
+    archived: false,
   };
 
   openTenantsForm.value = false;
@@ -143,6 +203,9 @@ function cancelTenants() {
     data: '',
     garageId: '',
     extraPhone: '',
+    rentAmount: '',
+    deposit: '',
+    archived: false,
   };
   openTenantsForm.value = false;
 }
@@ -184,6 +247,10 @@ function onPhoneKeyDown(event) {
     event.preventDefault(); // блокируем ввод буквы
   }
 }
+// Кнопка "В архив"
+function archiveTenant(id, isArchived) {
+  storeTenants.update(id, { archived: !isArchived });
+}
 </script>
 
 <style scoped>
@@ -200,6 +267,22 @@ function onPhoneKeyDown(event) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+@media screen and (max-width: 440px) {
+  .tenants-header {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .tenants-title {
+    order: 1;
+  }
+  .tenants-header a {
+    order: 3;
+  }
+  .tenants-header .btn {
+    order: 2;
+  }
 }
 
 .tenants-title {
@@ -271,7 +354,7 @@ function onPhoneKeyDown(event) {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   background: #fff;
   transition:
     box-shadow 0.15s,
@@ -326,6 +409,41 @@ function onPhoneKeyDown(event) {
   color: #888;
 }
 
+/* Действия в карточке (архив + удаление) */
+.tenant-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.tenant-card__archive {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: #888;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.tenant-card__archive:hover {
+  color: #2d6a4f;
+  text-decoration: underline;
+}
+
+.tenant-card__archived-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #eee;
+  color: #888;
+  cursor: default;
+}
+
 .tenant-card__delete {
   background: none;
   border: none;
@@ -336,12 +454,20 @@ function onPhoneKeyDown(event) {
   font-family: inherit;
   font-weight: 500;
   transition: opacity 0.15s;
-  margin-left: auto;
 }
 
 .tenant-card__delete:hover {
   opacity: 0.75;
   text-decoration: underline;
+}
+
+.tenant-card--archived {
+  opacity: 0.55;
+  background: #f5f5f3;
+}
+
+.tenant-card--archived:hover {
+  box-shadow: none;
 }
 
 /* Кнопки */
@@ -381,5 +507,24 @@ function onPhoneKeyDown(event) {
 
 .tenant-card__phone--extra {
   color: #777;
+}
+
+/* Финансы в карточке */
+.tenant-card__money {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tenant-card__rent {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+}
+
+.tenant-card__deposit {
+  font-size: 12px;
+  color: #e65100;
 }
 </style>

@@ -57,17 +57,6 @@
             :disabled="!isEditing"
           />
         </div>
-        <div class="garage-detail__card">
-          <label class="garage-detail__label" for="rent">Аренда в месяц</label>
-          <input
-            v-model="form.rent_amount"
-            id="rent"
-            type="number"
-            step="0.01"
-            class="garage-detail__input"
-            :disabled="!isEditing"
-          />
-        </div>
       </div>
 
       <div class="garage-detail__actions">

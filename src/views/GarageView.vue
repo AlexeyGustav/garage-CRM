@@ -28,13 +28,6 @@
         placeholder="Цена покупки ₽"
         required
       />
-      <input
-        class="garages-form__input"
-        v-model="form.rent_amount"
-        type="number"
-        placeholder="Аренда в месяц ₽"
-        required
-      />
       <div class="garages-form__actions">
         <button class="btn btn--primary" type="submit">Сохранить</button>
         <button class="btn btn--ghost" type="button" @click="showForm = false">Отмена</button>
@@ -60,12 +53,6 @@
             {{ isGarageOccupied(garage.id) ? 'Занят' : 'Свободен' }}
           </span>
         </div>
-        <div class="garage-card__bottom">
-          <span class="garage-card__area">{{ garage.area_m2 }} м²</span>
-          <span class="payment-amount garage-card__rent"
-            >{{ formatPrice(garage.rent_amount) }} ₽/мес</span
-          >
-        </div>
         <router-link class="garage-card__link" :to="{ name: 'garage', params: { id: garage.id } }">
           Открыть →
         </router-link>
@@ -88,7 +75,6 @@ const form = ref({
   address: '',
   area_m2: '',
   purchase_price: '',
-  rent_amount: '',
   num: '',
 });
 
@@ -98,7 +84,6 @@ function handleAdd() {
     address: '',
     area_m2: '',
     purchase_price: '',
-    rent_amount: '',
     num: '',
   };
   showForm.value = false;
