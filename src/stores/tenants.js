@@ -1,3 +1,4 @@
+import dataTenants from '@/mockData/tenants';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
@@ -6,37 +7,17 @@ export const useTenantsStore = defineStore('tenants', () => {
 
   const isLoading = ref(false);
 
-  function fetchTenants() {
-    isLoading.value = true;
-    setTimeout(() => {
-      try {
-        tenants.value = [
-          {
-            id: '1',
-            name: 'Иванов Иван Иванович',
-            telephone: '+7 (999) 123-45-67',
-            garageId: '1',
-            data: '2026-10-01',
-            rentAmount: 15000,
-            deposit: 15000,
-            archived: false,
-          },
-          {
-            id: '2',
-            name: 'Петров Сергей Алексеевич',
-            telephone: '+7 (916) 555-88-22',
-            garageId: '2',
-            data: '2026-08-15',
-            rentAmount: 12000,
-            deposit: 24000,
-            archived: false,
-          },
-        ];
-      } finally {
-        isLoading.value = false;
-      }
-    }, 2500);
-  }
+    // мок Данные
+    function fetchTenants() {
+      isLoading.value = true;
+      setTimeout(() => {
+        try {
+          tenants.value = dataTenants;
+        } finally {
+          isLoading.value = false;
+        }
+      }, 500);
+    }
 
   // Архивные арендаторы
   const activeTenants = computed(() => tenants.value.filter((t) => !t.archived));
@@ -80,6 +61,6 @@ export const useTenantsStore = defineStore('tenants', () => {
     getById,
     activeTenants,
     isLoading,
-    fetchTenants,
+    fetchTenants
   };
 });

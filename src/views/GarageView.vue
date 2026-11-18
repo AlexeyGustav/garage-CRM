@@ -34,12 +34,13 @@
       </div>
     </form>
 
+    <Loader v-if="storeGarages.isLoading" :size="200" />
     <!-- Пусто -->
-    <p v-if="store.garages.length === 0" class="garages-empty">Гаражей пока нет</p>
+    <p v-else-if="storeGarages.garages.length === 0" class="garages-empty">Гаражей пока нет</p>
 
     <!-- Список -->
-    <div class="garages-list">
-      <div v-for="garage in store.garages" :key="garage.id" class="garage-card">
+    <div v-else class="garages-list">
+      <div v-for="garage in storeGarages.garages" :key="garage.id" class="garage-card">
         <div class="garage-card__top">
           <span class="garage-number garage-card__address">{{ garage.address }}</span>
           <span
@@ -62,14 +63,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useGaragesStore } from '../stores/garages.js';
 import { useTenantsStore } from '../stores/tenants.js';
-import { formatPrice } from '../utils/format.js';
+import Loader from '@/components/Loader.vue';
 
-const store = useGaragesStore();
+const storeGarages = useGaragesStore();
 const storeTenants = useTenantsStore();
 const showForm = ref(false);
+
+onMounted(() => {
+  storeGarages.fetchGarages();
+});
 
 const form = ref({
   address: '',
@@ -79,7 +84,7 @@ const form = ref({
 });
 
 function handleAdd() {
-  store.add({ ...form.value });
+  storeGarages.add({ ...form.value });
   form.value = {
     address: '',
     area_m2: '',

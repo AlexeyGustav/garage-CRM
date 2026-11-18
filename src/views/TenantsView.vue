@@ -151,12 +151,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useTenantsStore } from '@/stores/tenants.js';
 import { useGaragesStore } from '@/stores/garages.js';
 import { formatPrice, formatPhone } from '@/utils/format.js';
 import Loader from '@/components/Loader.vue';
-import { onMounted } from 'vue';
 
 const storeTenants = useTenantsStore();
 const storeGarages = useGaragesStore();

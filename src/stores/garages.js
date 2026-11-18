@@ -1,10 +1,24 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useTenantsStore } from './tenants';
+import dataGarages from '../mockData/garages.js';
 
 export const useGaragesStore = defineStore('garages', () => {
-  const tenantsStore = useTenantsStore();
   const garages = ref([]);
+  const tenantsStore = useTenantsStore();
+
+  const isLoading = ref(false);
+  // мок Данные
+  function fetchGarages() {
+    isLoading.value = true;
+    setTimeout(() => {
+      try {
+        garages.value = dataGarages;
+      } finally {
+        isLoading.value = false;
+      }
+    }, 500);
+  }
 
   // Всего гаражей
   const total = computed(() => garages.value.length);
@@ -54,5 +68,7 @@ export const useGaragesStore = defineStore('garages', () => {
     remove,
     getById,
     isGarageOccupied,
+    isLoading,
+    fetchGarages
   };
 });
